@@ -1,0 +1,37 @@
+name: Deploy Tetris Application On Azure
+on:
+  workflow_dispatch:
+  push:
+    branches: ["main"]
+jobs:
+  Deploy Application on azure:
+    runs-on: windows-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Azure Login
+        uses: azure/login@14a755a4e2fd6dff25794233def4f2cf3f866955
+        with:
+          creds: ${{ secrets.AZURE_CREDENTIALS }}
+
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v2
+
+      -name: Create aks cluster
+        shell: bash
+        run: |
+          cd terraform
+          terraform init
+          terraform apply -auto-approve
+
+      - name: Deploy Application and scale it horizontally
+        run: |
+          cd pods
+          kubectl apply -f pods/tetris.yml
+          kubectl apply -f pods/[hra].yaml
+        
+      - name: Destroy resources after deployment
+        run: |
+          cd terraform
+          terraform destroy
