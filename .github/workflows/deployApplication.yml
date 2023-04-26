@@ -18,7 +18,7 @@ jobs:
       - name: Setup Terraform
         uses: hashicorp/setup-terraform@v2
 
-      -name: Create aks cluster
+      - name: Create aks cluster
         shell: bash
         run: |
           cd terraform
@@ -30,7 +30,7 @@ jobs:
           cd pods
           kubectl apply -f pods/tetris.yml
           kubectl apply -f pods/[hra].yaml
-        
+
       - name: Destroy resources after deployment
         run: |
           cd terraform
